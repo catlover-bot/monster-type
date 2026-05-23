@@ -129,9 +129,9 @@ function App() {
           <div className="badge">MONSTER TYPE</div>
 
           <h1>
-            {questions.length}問で、あなたの中の
+            無料のモンスター性格診断
             <br />
-            モンスターを召喚。
+            {questions.length}問で、あなたの中のモンスターを召喚。
           </h1>
 
           <p className="lead">
