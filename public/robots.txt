@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://monster-type.dimension0122.workers.dev/sitemap.xml
+Sitemap: https://monster-type.dimension0122.workers.dev/sitemap-v2.xml
