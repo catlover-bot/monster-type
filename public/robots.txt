@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://monster-type.dimension0122.workers.dev/sitemap.xml
