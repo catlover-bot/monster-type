@@ -656,3 +656,22 @@ h1 {
     padding: 18px;
   }
 }
+
+.shareActions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.shareActions .startButton,
+.shareActions .subButton {
+  width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .shareActions {
+    grid-template-columns: 1fr;
+  }
+}

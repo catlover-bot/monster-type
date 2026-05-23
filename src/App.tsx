@@ -107,19 +107,51 @@ function App() {
     setQuestionIndex((current) => current + 1)
   }
 
-  const shareResult = async () => {
-    const text = `私のモンスタータイプは「${resultMonster.name}」でした！\n${resultMonster.title}\n${resultProfile?.shortSummary ?? resultMonster.description}\n#モンスター性格診断`
+  const shareUrl = 'https://monster-type.dimension0122.workers.dev/'
 
+  const shareText = `私のモンスタータイプは「${resultMonster.name}」でした！\n${resultMonster.title}\n${resultProfile?.shortSummary ?? resultMonster.description}\n#モンスター性格診断 #MonsterType`
+
+  const copyShareText = async () => {
+    await navigator.clipboard.writeText(`${shareText}\n${shareUrl}`)
+    alert('診断結果とURLをコピーしました！')
+  }
+
+  const shareResult = async () => {
     if (navigator.share) {
-      await navigator.share({
-        title: 'モンスター性格診断',
-        text,
-      })
-      return
+      try {
+        await navigator.share({
+          title: 'モンスター性格診断',
+          text: shareText,
+          url: shareUrl,
+        })
+        return
+      } catch (error) {
+        const errorName = error instanceof DOMException ? error.name : ''
+        if (errorName === 'AbortError') {
+          return
+        }
+      }
     }
 
-    await navigator.clipboard.writeText(text)
-    alert('診断結果をコピーしました！')
+    await copyShareText()
+  }
+
+  const shareToX = () => {
+    const params = new URLSearchParams({
+      text: shareText,
+      url: shareUrl,
+    })
+
+    window.open(`https://twitter.com/intent/tweet?${params.toString()}`, '_blank', 'noopener,noreferrer')
+  }
+
+  const shareToLine = () => {
+    const params = new URLSearchParams({
+      url: shareUrl,
+      text: shareText,
+    })
+
+    window.open(`https://social-plugins.line.me/lineit/share?${params.toString()}`, '_blank', 'noopener,noreferrer')
   }
 
   return (
@@ -308,9 +340,15 @@ function App() {
             )}
           </section>
 
-          <div className="actions">
+          <div className="actions shareActions">
             <button className="startButton" onClick={shareResult}>
               結果をシェア
+            </button>
+            <button className="subButton" onClick={shareToX}>
+              Xでシェア
+            </button>
+            <button className="subButton" onClick={shareToLine}>
+              LINEで送る
             </button>
             <button className="subButton" onClick={startQuiz}>
               もう一度診断する
@@ -421,9 +459,15 @@ function App() {
             </div>
           </div>
 
-          <div className="actions">
+          <div className="actions shareActions">
             <button className="startButton" onClick={shareResult}>
               詳細をシェア
+            </button>
+            <button className="subButton" onClick={shareToX}>
+              Xでシェア
+            </button>
+            <button className="subButton" onClick={shareToLine}>
+              LINEで送る
             </button>
             <button className="subButton" onClick={startQuiz}>
               もう一度診断する
