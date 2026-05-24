@@ -279,6 +279,19 @@ function App() {
         <section className="resultCard">
           <div className="badge">SUMMON COMPLETE</div>
 
+          {sharedMonster && (
+            <section className="sharedResultNotice">
+              <span>共有された診断結果</span>
+              <p>
+                このリンクは「{resultMonster.name}」の診断結果ページです。
+                あなたも診断すると、自分のモンスタータイプを召喚できます。
+              </p>
+              <button className="miniButton" onClick={startQuiz}>
+                自分も診断してみる
+              </button>
+            </section>
+          )}
+
           <p className="resultLabel">あなたの中のモンスターは...</p>
 
           <MonsterImage monster={resultMonster} />

@@ -675,3 +675,43 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
+.sharedResultNotice {
+  width: min(720px, 100%);
+  margin: 0 auto 28px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  text-align: left;
+}
+
+.sharedResultNotice span {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #ffd6f0;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.sharedResultNotice p {
+  margin: 0 0 14px;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.7;
+}
+
+.miniButton {
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 16px;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.miniButton:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.2);
+}
