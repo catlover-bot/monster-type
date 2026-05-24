@@ -1,25 +1,33 @@
 import { useMemo, useState } from 'react'
 import './App.css'
-import { monsters, type Monster, type TraitKey } from './data/monsters'
+import { monsters, type Monster } from './data/monsters'
 import { monsterProfiles } from './data/monsterProfiles'
 import { evolutionQuests } from './data/evolutionQuests'
-import { questions, type Answer } from './data/questions'
+import {
+  initialPsychScores,
+  monsterPsychProfileMap,
+  type PsychScores,
+  type PsychTraitKey,
+} from './data/psychology'
+import { psychQuestions as questions, type PsychAnswer } from './data/psychQuestions'
 
 type GameState = 'home' | 'quiz' | 'result' | 'detail'
 
-type Scores = Record<TraitKey, number>
+type Scores = PsychScores
 
-const initialScores: Scores = {
-  energy: 0,
-  social: 0,
-  sleepiness: 0,
-  romance: 0,
-  planning: 0,
-  delay: 0,
-  approval: 0,
-  replySpeed: 0,
-  chaos: 0,
-  kindness: 0,
+const psychTraitKeys: PsychTraitKey[] = [
+  'socialEnergy',
+  'structure',
+  'curiosity',
+  'harmony',
+  'emotionalReactivity',
+  'assertiveness',
+  'spontaneity',
+  'rewardSensitivity',
+]
+
+const normalizePsychScore = (score: number) => {
+  return Math.max(-2, Math.min(2, score / 3))
 }
 
 const rarityLabel: Record<Monster['rarity'], string> = {
@@ -30,22 +38,26 @@ const rarityLabel: Record<Monster['rarity'], string> = {
 }
 
 function chooseMonster(scores: Scores): Monster {
-  const rarityBonus: Record<Monster['rarity'], number> = {
-    Normal: 0,
-    Rare: 0.15,
-    Epic: 0.3,
-    Legend: 0.45,
-  }
+  const normalizedScores = Object.fromEntries(
+    psychTraitKeys.map((trait) => [trait, normalizePsychScore(scores[trait])]),
+  ) as Scores
 
   const ranked = monsters
     .map((monster) => {
-      const traitTotal = monster.primaryTraits.reduce((sum, trait) => sum + scores[trait], 0)
-      const average = traitTotal / monster.primaryTraits.length
-      const total = average + rarityBonus[monster.rarity]
+      const profile = monsterPsychProfileMap[monster.id]
 
-      return { monster, total }
+      if (!profile) {
+        return { monster, distance: Number.POSITIVE_INFINITY }
+      }
+
+      const distance = psychTraitKeys.reduce((sum, trait) => {
+        const diff = normalizedScores[trait] - profile.target[trait]
+        return sum + diff * diff
+      }, 0)
+
+      return { monster, distance }
     })
-    .sort((a, b) => b.total - a.total)
+    .sort((a, b) => a.distance - b.distance)
 
   return ranked[0].monster
 }
@@ -68,7 +80,7 @@ function MonsterImage({ monster }: { monster: Monster }) {
 function App() {
   const [gameState, setGameState] = useState<GameState>('home')
   const [questionIndex, setQuestionIndex] = useState(0)
-  const [scores, setScores] = useState<Scores>(initialScores)
+  const [scores, setScores] = useState<Scores>(initialPsychScores)
 
   const currentQuestion = questions[questionIndex]
 
@@ -84,16 +96,16 @@ function App() {
     : 0
 
   const startQuiz = () => {
-    setScores(initialScores)
+    setScores(initialPsychScores)
     setQuestionIndex(0)
     setGameState('quiz')
   }
 
-  const selectAnswer = (answer: Answer) => {
+  const selectAnswer = (answer: PsychAnswer) => {
     const nextScores = { ...scores }
 
     for (const [trait, point] of Object.entries(answer.scores)) {
-      const key = trait as TraitKey
+      const key = trait as PsychTraitKey
       nextScores[key] += point ?? 0
     }
 
