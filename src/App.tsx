@@ -37,6 +37,21 @@ const rarityLabel: Record<Monster['rarity'], string> = {
   Legend: 'レジェンド',
 }
 
+
+function getSharedMonsterFromUrl(): Monster | null {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  const monsterId = new URLSearchParams(window.location.search).get('monster')
+
+  if (!monsterId) {
+    return null
+  }
+
+  return monsters.find((monster) => monster.id === monsterId) ?? null
+}
+
 function chooseMonster(scores: Scores): Monster {
   const normalizedScores = Object.fromEntries(
     psychTraitKeys.map((trait) => [trait, normalizePsychScore(scores[trait])]),
@@ -78,15 +93,20 @@ function MonsterImage({ monster }: { monster: Monster }) {
 }
 
 function App() {
-  const [gameState, setGameState] = useState<GameState>('home')
+  const [sharedMonster, setSharedMonster] = useState<Monster | null>(() => getSharedMonsterFromUrl())
+  const [gameState, setGameState] = useState<GameState>(() => (
+    getSharedMonsterFromUrl() ? 'result' : 'home'
+  ))
   const [questionIndex, setQuestionIndex] = useState(0)
   const [scores, setScores] = useState<Scores>(initialPsychScores)
 
   const currentQuestion = questions[questionIndex]
 
-  const resultMonster = useMemo(() => {
+  const computedMonster = useMemo(() => {
     return chooseMonster(scores)
   }, [scores])
+
+  const resultMonster = sharedMonster ?? computedMonster
 
   const resultProfile = monsterProfiles[resultMonster.id]
   const evolutionQuest = evolutionQuests[resultMonster.id]
@@ -96,8 +116,14 @@ function App() {
     : 0
 
   const startQuiz = () => {
+    setSharedMonster(null)
     setScores(initialPsychScores)
     setQuestionIndex(0)
+
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', window.location.pathname)
+    }
+
     setGameState('quiz')
   }
 
@@ -112,6 +138,7 @@ function App() {
     setScores(nextScores)
 
     if (questionIndex + 1 >= questions.length) {
+      setSharedMonster(null)
       setGameState('result')
       return
     }
@@ -119,7 +146,8 @@ function App() {
     setQuestionIndex((current) => current + 1)
   }
 
-  const shareUrl = 'https://monster-type.dimension0122.workers.dev/'
+  const siteUrl = 'https://monster-type.dimension0122.workers.dev/'
+  const shareUrl = `${siteUrl}?monster=${resultMonster.id}`
 
   const shareText = `私のモンスタータイプは「${resultMonster.name}」でした！\n${resultMonster.title}\n${resultProfile?.shortSummary ?? resultMonster.description}\n#モンスター性格診断 #MonsterType`
 
