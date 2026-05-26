@@ -11,7 +11,7 @@ import {
 } from './data/psychology'
 import { psychQuestions as questions, type PsychAnswer } from './data/psychQuestions'
 
-type GameState = 'home' | 'quiz' | 'result' | 'detail'
+type GameState = 'home' | 'quiz' | 'result' | 'detail' | 'dex'
 
 type Scores = PsychScores
 
@@ -127,6 +127,16 @@ function App() {
     setGameState('quiz')
   }
 
+  const openMonsterResult = (monster: Monster) => {
+    setSharedMonster(monster)
+    setGameState('result')
+
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', `${window.location.pathname}?monster=${monster.id}`)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
   const selectAnswer = (answer: PsychAnswer) => {
     const nextScores = { ...scores }
 
@@ -211,9 +221,14 @@ function App() {
             モンスタータイプを診断するWebゲームです。
           </p>
 
-          <button className="startButton" onClick={startQuiz}>
-            診断をはじめる
-          </button>
+          <div className="homeActions">
+            <button className="startButton" onClick={startQuiz}>
+              診断をはじめる
+            </button>
+            <button className="subButton dexButton" onClick={() => setGameState('dex')}>
+              モンスター図鑑を見る
+            </button>
+          </div>
 
           <p className="note">
             例：布団吸着ねむりん / 即レス圧つよワイバーン / 締切前夜フェニックス
@@ -245,6 +260,68 @@ function App() {
               </p>
             </div>
           </section>
+        </section>
+      )}
+
+      {gameState === 'dex' && (
+        <section className="dexPage">
+          <div className="dexHeader">
+            <div>
+              <div className="badge">MONSTER DEX</div>
+              <h1>モンスター図鑑</h1>
+              <p>
+                診断で召喚される全{monsters.length}体のモンスターを一覧できます。
+                気になるモンスターを選ぶと、結果ページを直接確認できます。
+              </p>
+            </div>
+            <button className="backButton" onClick={() => setGameState('home')}>
+              ← トップに戻る
+            </button>
+          </div>
+
+          <div className="dexGrid">
+            {monsters.map((monster) => {
+              const profile = monsterProfiles[monster.id]
+              const evolutionQuest = evolutionQuests[monster.id]
+
+              return (
+                <button
+                  className="dexCard"
+                  key={monster.id}
+                  onClick={() => openMonsterResult(monster)}
+                >
+                  <div className="dexThumb">
+                    <img
+                      src={monster.image}
+                      alt={monster.name}
+                      onError={(event) => {
+                        event.currentTarget.style.display = 'none'
+                      }}
+                    />
+                    <span>👾</span>
+                  </div>
+
+                  <div className="dexCardBody">
+                    <div className="dexBadges">
+                      <span>{rarityLabel[monster.rarity]}</span>
+                      <span>{monster.elementEmoji} {monster.element}</span>
+                    </div>
+
+                    <h2>{monster.name}</h2>
+                    <p className="dexTitle">{monster.title}</p>
+                    <p className="dexSummary">
+                      {profile?.shortSummary ?? monster.description}
+                    </p>
+
+                    <div className="dexEvolution">
+                      <span>進化先</span>
+                      <strong>{evolutionQuest?.evolvedName ?? monster.evolution}</strong>
+                    </div>
+                  </div>
+                </button>
+              )
+            })}
+          </div>
         </section>
       )}
 

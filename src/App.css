@@ -715,3 +715,180 @@ h1 {
   transform: translateY(-1px);
   background: rgba(255, 255, 255, 0.2);
 }
+
+.homeActions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.dexButton {
+  min-width: 220px;
+}
+
+.dexPage {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.22);
+}
+
+.dexHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.dexHeader h1 {
+  margin: 16px 0 12px;
+  font-size: clamp(2.3rem, 5vw, 4.2rem);
+}
+
+.dexHeader p {
+  max-width: 720px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.8;
+}
+
+.dexGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.dexCard {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 16px;
+  width: 100%;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.075);
+  color: white;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.dexCard:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 214, 240, 0.36);
+}
+
+.dexThumb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 110px;
+  height: 110px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.dexThumb img {
+  position: relative;
+  z-index: 2;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.dexThumb span {
+  position: absolute;
+  z-index: 1;
+  font-size: 2rem;
+  opacity: 0.7;
+}
+
+.dexCardBody h2 {
+  margin: 10px 0 4px;
+  font-size: 1.25rem;
+}
+
+.dexBadges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dexBadges span {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.dexTitle {
+  margin: 0 0 10px;
+  color: #ffd6f0;
+  font-weight: 800;
+}
+
+.dexSummary {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.dexEvolution {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dexEvolution span {
+  display: block;
+  margin-bottom: 4px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.dexEvolution strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+@media (max-width: 980px) {
+  .dexGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dexHeader {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 680px) {
+  .dexPage {
+    padding: 24px;
+    border-radius: 28px;
+  }
+
+  .dexGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .dexCard {
+    grid-template-columns: 88px 1fr;
+    padding: 14px;
+  }
+
+  .dexThumb {
+    width: 88px;
+    height: 88px;
+  }
+}
