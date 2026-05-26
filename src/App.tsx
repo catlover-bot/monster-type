@@ -52,6 +52,24 @@ function getSharedMonsterFromUrl(): Monster | null {
   return monsters.find((monster) => monster.id === monsterId) ?? null
 }
 
+function getInitialGameState(): GameState {
+  if (typeof window === 'undefined') {
+    return 'home'
+  }
+
+  const params = new URLSearchParams(window.location.search)
+
+  if (params.get('monster')) {
+    return 'result'
+  }
+
+  if (params.get('page') === 'dex') {
+    return 'dex'
+  }
+
+  return 'home'
+}
+
 function chooseMonster(scores: Scores): Monster {
   const normalizedScores = Object.fromEntries(
     psychTraitKeys.map((trait) => [trait, normalizePsychScore(scores[trait])]),
@@ -94,9 +112,7 @@ function MonsterImage({ monster }: { monster: Monster }) {
 
 function App() {
   const [sharedMonster, setSharedMonster] = useState<Monster | null>(() => getSharedMonsterFromUrl())
-  const [gameState, setGameState] = useState<GameState>(() => (
-    getSharedMonsterFromUrl() ? 'result' : 'home'
-  ))
+  const [gameState, setGameState] = useState<GameState>(() => getInitialGameState())
   const [questionIndex, setQuestionIndex] = useState(0)
   const [scores, setScores] = useState<Scores>(initialPsychScores)
 
@@ -125,6 +141,16 @@ function App() {
     }
 
     setGameState('quiz')
+  }
+
+  const openMonsterDex = () => {
+    setSharedMonster(null)
+    setGameState('dex')
+
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', `${window.location.pathname}?page=dex`)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
   }
 
   const openMonsterResult = (monster: Monster) => {
@@ -225,7 +251,7 @@ function App() {
             <button className="startButton" onClick={startQuiz}>
               診断をはじめる
             </button>
-            <button className="subButton dexButton" onClick={() => setGameState('dex')}>
+            <button className="subButton dexButton" onClick={openMonsterDex}>
               モンスター図鑑を見る
             </button>
           </div>
@@ -274,7 +300,15 @@ function App() {
                 気になるモンスターを選ぶと、結果ページを直接確認できます。
               </p>
             </div>
-            <button className="backButton" onClick={() => setGameState('home')}>
+            <button
+              className="backButton"
+              onClick={() => {
+                setGameState('home')
+                if (typeof window !== 'undefined') {
+                  window.history.replaceState(null, '', window.location.pathname)
+                }
+              }}
+            >
               ← トップに戻る
             </button>
           </div>
